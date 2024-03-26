@@ -1,40 +1,86 @@
-from flask import request
+from flask import request, render_template
 from . import app
 from fakeData.posts import post_data
 
+# Will set up db later, for now we will store all Users in this users list
+users = []
 
 # Define a route
 @app.route("/")
 def index():
-    first_name = 'Garren'
-    age = 123
-    return 'Hello ' + first_name + ' who is ' + str(age) + ' years old'
+    return render_template('index.html')
 
-# post endpoints
+# User Endpoints
 
-# get all posts
+# Create New User
+@app.route('/users', methods=['POST'])
+def create_user():
+    # Check to make sure that the request body is JSON
+    if not request.is_json:
+        return {'error': 'Your content-type must be application/json'}, 400
+    # Get the data from the request body
+    data = request.json
+
+    # Validate that the data has all of the required fields
+    required_fields = ['firstName', 'lastName', 'username', 'email', 'password']
+    missing_fields = []
+    for field in required_fields:
+        if field not in data:
+            missing_fields.append(field)
+    if missing_fields:
+        return {'error': f"{', '.join(missing_fields)} must be in the request body"}, 400
+
+    # Pull the individual data from the body
+    first_name = data.get('firstName')
+    last_name = data.get('lastName')
+    username = data.get('username')
+    email = data.get('email')
+    password = data.get('password')
+
+    # Check to see if any current users already have that username and/or email
+    for user in users:
+        if user['username'] == username or user['email'] == email:
+            return {'error': "A user with that username and/or email already exists"}, 400
+
+    # Create a new instance of user with the data from the request
+    new_user = {
+        "id": len(users) + 1,
+        "firstName": first_name,
+        "lastName": last_name,
+        "username": username,
+        "email": email,
+        "password": password
+    }
+    users.append(new_user)
+
+    return new_user, 201
+
+# Post Endpoints
+
+# Get All Posts
 @app.route('/posts')
-def getposts():
-    # get the posts from storage (fake data -> tomorrow will be db)
-    posts = post_data
+def get_posts():
+    # Get the posts from storage (fake data -> tomorrow will be db)
+    posts = post_data 
     return posts
 
 
-# get single post by ID
+# Get a Single Post By ID
 @app.route('/posts/<int:post_id>')
-def getpost(post_id):
+def get_post(post_id):
+    # Get the posts from storage
     posts = post_data
-    # for each dict in the list of post dicts
+    # For each dictionary in the list of post dictionaries
     for post in posts:
-        # if the key of id matches the post id from the url
+        # If the key of 'id' matches the post_id from the URL
         if post['id'] == post_id:
-            # return that post from the dict
+            # Return that post dictionary
             return post
-    # if we loop through all the posts without returning the post with that id does not exist
+    # If we loop through all of the posts without returning, the post with that ID does not exist
+    return {'error': f"Post with an ID of {post_id} does not exist"}, 404
 
-    return {'Error': f'post of {post_id} does not exist'}, 404
 
-# create a post
+# Create a Post
 @app.route('/posts', methods=['POST'])
 def create_post():
     # Check to see if the request body is JSON
@@ -51,16 +97,16 @@ def create_post():
         if field not in data:
             # Add that field to the list of missing fields
             missing_fields.append(field)
-    # If there are any missing fields, return 400 status code with the missin
+    # If there are any missing fields, return 400 status code with the missing fields listed
     if missing_fields:
         return {'error': f"{', '.join(missing_fields)} must be in the request body"}, 400
-   
+    
     # Get data values
     title = data.get('title')
     body = data.get('body')
 
     # Create a new post dictionary with data
-    newpost = {
+    new_post = {
         'id': len(post_data) + 1,
         'title': title,
         'body': body,
@@ -70,8 +116,7 @@ def create_post():
     }
 
     # Add the new post to storage (post_data -> will be db tomorrow)
-    post_data.append(newpost)
-    
-    # Return the newly created post dictionary with a 201 Created Status Code
-    return newpost, 201
+    post_data.append(new_post)
 
+    # Return the newly created post dictionary with a 201 Created Status Code
+    return new_post, 201
