@@ -5,4 +5,4 @@ venv/
 __pycache__/
 
 # ignore env file because it contains environment secrets
-.env/
+.env
