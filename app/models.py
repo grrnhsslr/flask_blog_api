@@ -10,7 +10,7 @@ class User(db.Model):
     email = db.Column(db.String, nullable=False, unique=True)
     username = db.Column(db.String, nullable=False, unique=True)
     password = db.Column(db.String, nullable=False)
-    date_created = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    date_created = db.Column(db.DateTime, nullable=False, default=datetime.now)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -29,3 +29,11 @@ class User(db.Model):
 
     def checkpw(self, plaintextpw):
         return check_password_hash(self.password, plaintextpw)
+
+    def to_dict(self):
+        return {'id': self.id,
+    'firstname': self.first_name,
+    'lastName': self.last_name,
+    'username': self.username,
+    'dateCreated': self.date_created
+}
