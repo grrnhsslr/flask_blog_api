@@ -112,3 +112,26 @@ def create_post():
 
     # Return the newly created post dictionary with a 201 Created Status Code
     return new_post.to_dict(), 201
+
+# update post end poitn
+@app.route('/posts/<int:post_id>', methods=['PUT'])
+@token_auth.login_required
+def edit_posts(post_id):
+    # check to see that they have a json body
+    if not request.is_json:
+        return {"error": "your content type must be application/json"}, 400
+    # find the post in the db
+    post = db.session.get(Post, post_id)
+    if post is None:
+        return {'error': f"post with id #{post_id} does not exist"}, 404
+    # get current user based on token
+    current_user = token_auth.current_user()
+    # check if the current use is the author of the post
+    if current_user is not post.author:
+        return {'error': "this is not your post. you do not have permission to edit"}, 403
+    
+    # get data from request
+    data = request.json
+    # pass the data into the post
+    post.update(**data)
+    return post.to_dict()
