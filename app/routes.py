@@ -1,6 +1,7 @@
 from flask import request, render_template
 from . import app, db
 from .models import User, Post
+from .auth import basic_auth
 
 
 # Define a route
@@ -44,6 +45,12 @@ def create_user():
     new_user = User(first_name=first_name, last_name=last_name,  username=username, email=email, password=password)
 
     return new_user.to_dict(), 201
+
+@app.route("/token")
+@basic_auth.login_required
+def get_token():
+    user = basic_auth.current_user()
+    return user.get_token()
 
 # Post Endpoints
 
