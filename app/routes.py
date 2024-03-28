@@ -19,7 +19,7 @@ def create_user():
     # Get the data from the request body
     data = request.json
 
-    # Validate that the data has all of the required fields
+    # Validate that the data has all the required fields
     required_fields = ['firstName', 'lastName', 'username', 'email', 'password']
     missing_fields = []
     for field in required_fields:
@@ -67,7 +67,7 @@ def get_post(post_id):
     if post:
         return post.to_dict()
     else:
-        # If we loop through all of the posts without returning, the post with that ID does not exist
+        # If we loop through all the posts without returning, the post with that ID does not exist
         return {'error': f"Post with an ID of {post_id} does not exist"}, 404
 
 
