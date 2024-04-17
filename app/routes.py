@@ -1,7 +1,6 @@
 from flask import request, render_template
 from . import app, db
 from .models import User, Post, Comment
-from .auth import basic_auth
 from .auth import basic_auth, token_auth
 
 

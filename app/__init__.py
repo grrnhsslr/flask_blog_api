@@ -2,6 +2,7 @@ from flask import Flask  # Import the Flask class from the flask module
 from flask_sqlalchemy import SQLAlchemy
 from config import Config
 from flask_migrate import Migrate
+from flask_cors import CORS # import CORS to allow cross origin resource sharing
 
 # Create an instance of Flask called app which will be the central object
 app = Flask(__name__)
