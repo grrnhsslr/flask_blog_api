@@ -9,6 +9,7 @@ app = Flask(__name__)
 # set the config for the app
 app.config.from_object(Config)
 
+CORS(app)
 # create an instance of SQLalchemy called db which will be the central obj for our database
 db = SQLAlchemy(app)
 migrate = Migrate(app,db)
