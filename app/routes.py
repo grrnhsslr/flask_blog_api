@@ -52,6 +52,12 @@ def get_token():
     user = basic_auth.current_user()
     return user.get_token()
 
+@app.route('/users/me')
+@token_auth.login_required
+def get_me():
+    user = token_auth.current_user()
+    return user.to_dict()
+
 # Post Endpoints
 
 # Get All Posts
